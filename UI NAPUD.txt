@@ -1,0 +1,142 @@
+using static UI_Project.Form2.GameItem;
+
+
+
+private void btn_addtocart_Click(object sender, EventArgs e)
+        {
+            // Check if the cart already has 3 items
+            if (pnl_1.Visible && pnl_2.Visible && pnl_3.Visible)
+            {
+                MessageBox.Show("Your cart is already full. You can only add up to 3 items.");
+                return;
+            }
+
+            // Get the selected game from the gameItems list
+            GameItem selectedGame = gameItems.FirstOrDefault(g => g.GameId == currentSelectedGameId);
+
+            // Find the first available panel in the cart
+            Panel availablePanel = null;
+            if (!pnl_1.Visible)
+            {
+                availablePanel = pnl_1;
+            }
+            else if (!pnl_2.Visible)
+            {
+                availablePanel = pnl_2;
+            }
+            else if (!pnl_3.Visible)
+            {
+                availablePanel = pnl_3;
+            }
+
+            // Add the selected game to the available panel
+            if (availablePanel != null)
+            {
+                PictureBox picbox_cart = availablePanel.Controls.OfType<PictureBox>().FirstOrDefault();
+                Label lbl_gamename = availablePanel.Controls.OfType<Label>().FirstOrDefault(l => l.Name.StartsWith("lbl_gamename"));
+                Label lbl_gameprice = availablePanel.Controls.OfType<Label>().FirstOrDefault(l => l.Name.StartsWith("lbl_gameprice"));
+
+                if (picbox_cart != null && lbl_gamename != null && lbl_gameprice != null)
+                {
+                    picbox_cart.Image = selectedGame.GameImage;
+                    lbl_gamename.Text = selectedGame.GameName;
+                    lbl_gameprice.Text = selectedGame.GamePrice.ToString("C");
+                    availablePanel.Visible = true;
+
+                    // Add the selected game to the cartItems list
+                    CartItem cartItem = new CartItem
+                    {
+                        GameName = selectedGame.GameName,
+                        Price = selectedGame.GamePrice,
+                        Image = selectedGame.GameImage
+                    };
+                    cartItems.Add(cartItem);
+                }
+            }
+        }
+
+        List<CartItem> cartItems = new List<CartItem>();
+
+        private void UpdateCartMenu()
+        {
+            // Clear all the cart panels
+            pnl_1.Visible = false;
+            pnl_2.Visible = false;
+            pnl_3.Visible = false;
+
+            // Loop through the cart items and update the corresponding cart panels
+            for (int i = 0; i < cartItems.Count; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        pnl_1.Visible = true;
+                        picbox_cart1.Image = cartItems[i].Image;
+                        break;
+                    case 1:
+                        pnl_2.Visible = true;
+                        picbox_cart2.Image = cartItems[i].Image;
+                        break;
+                    case 2:
+                        pnl_3.Visible = true;
+                        picbox_cart3.Image = cartItems[i].Image;
+                        break;
+                }
+            }
+
+            // Hide empty cart panels
+            if (cartItems.Count == 0)
+            {
+                pnl_1.Visible = false;
+                pnl_2.Visible = false;
+                pnl_3.Visible = false;
+            }
+        }
+
+        
+        
+        public class GameItem
+        {
+            public int GameId { get; set; }
+            public string GameName { get; set; }
+            public decimal GamePrice { get; set; }
+            public Bitmap GameImage { get; set; }
+
+            public GameItem(int gameId, string gameName, decimal gamePrice, Bitmap gameImage)
+            {
+                GameId = gameId;
+                GameName = gameName;
+                GamePrice = gamePrice;
+                GameImage = gameImage;
+            }
+
+            public override string ToString()
+            {
+                return $"{GameName} - ₱{GamePrice}";
+            }
+        }
+
+        List<GameItem> gameItems = new List<GameItem>();
+        private void Form2_Load(object sender, EventArgs e)
+        {
+            // Populate the game items list with the provided data
+            gameItems.Add(new GameItem(1, "Stray", 998.50m, Properties.Resources.stray));
+            gameItems.Add(new GameItem(2, "Hogwarts Legacy: Deluxe Edition", 2450.00m, Properties.Resources.hogwarts));
+            gameItems.Add(new GameItem(3, "Suicide Squad", 1589.65m, Properties.Resources.ss));
+            gameItems.Add(new GameItem(4, "The Last of Us: Part II", 700.70m, Properties.Resources.the_last_of_us));
+            gameItems.Add(new GameItem(5, "Atelier Ryza 3", 3987.00m, Properties.Resources.alchem));
+            gameItems.Add(new GameItem(6, "Tera Nil", 765.90m, Properties.Resources.tera));
+            gameItems.Add(new GameItem(7, "Resident Evil 4", 850.35m, Properties.Resources.res));
+            gameItems.Add(new GameItem(8, "Mato Anomalies", 3568.00m, Properties.Resources.mato));
+            gameItems.Add(new GameItem(9, "WWE 2k23", 1299.00m, Properties.Resources.wwe));
+            gameItems.Add(new GameItem(10, "GTA 5", 996.00m, Properties.Resources.gta));
+            gameItems.Add(new GameItem(11, "Spider-Man", 2990.00m, Properties.Resources.spiderman));
+            gameItems.Add(new GameItem(12, "L4D 2", 300.00m, Properties.Resources.l4d));
+        }
+
+        public class CartItem
+        {
+            public string GameName { get; set; }
+            public decimal Price { get; set; }
+            public Image Image { get; set; }
+        }

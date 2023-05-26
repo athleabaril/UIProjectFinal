@@ -1,0 +1,19 @@
+If you want to remove a subdatasheet that you previously inserted in Microsoft Access, you can follow these steps:
+
+Open the form or datasheet view that contains the subdatasheet that you want to remove in Microsoft Access.
+
+In Design View, right-click on the field or column header that contains the subdatasheet, and select "Subdatasheet Name" from the context menu. The subdatasheet name will be the name of the related table or query that you specified when you inserted the subdatasheet.
+
+From the submenu that appears, select "None". This will remove the subdatasheet from the field or column.
+
+Save and close the form or datasheet view.
+
+By selecting "None" as the subdatasheet name, you are effectively removing the subdatasheet from the form or datasheet view, and the related records from the related table or query will no longer be displayed as a nested datasheet within the main form or datasheet.
+
+Note that removing a subdatasheet will not delete the related data from the underlying table or query. It only removes the display of the related data in the subdatasheet view of the form or datasheet. If you want to permanently delete the related data, you will need to delete the records from the underlying table or query directly.
+
+
+
+
+
+

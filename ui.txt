@@ -1,0 +1,21 @@
+Game Number	Game Name	Price
+1	Stray	₱998.50
+2	Hogwarts Legacy: Deluxe Edition	₱2,450.00
+3	Suicide Squad	₱1,589.65
+4	The Last of Us: Part II	₱700.70
+5	Atelier Ryza 3	₱3,987.00
+6	Tera Nil	₱765.90
+7	Resident Evil 4	₱850.35
+8	Mato Anomalies	₱3,568.00
+9	WWE 2k23	₱1,299.00
+10	GTA 5	₱996.00
+11	Spider-Man	₱2,990.00
+12	L4D 2	₱300.00
+
+
+IIf([Sale]=-1,[Price]*(1-[Percentage Off]/100),[Price])
+
+
+
+
+

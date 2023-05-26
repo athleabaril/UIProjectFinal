@@ -1,0 +1,120 @@
+using System;
+using System.Data.OleDb;
+using System.Windows.Forms;
+
+namespace UI_Project
+{
+    public partial class Form1 : Form
+    {
+        private OleDbConnection connection = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\Athlea Baril\Desktop\Vs Program OOP2\UI Project\UI Project DataBase\UI_Project Database.accdb");
+
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void btn_confirm_Click(object sender, EventArgs e)
+        {
+            // Validate user input
+            if (string.IsNullOrWhiteSpace(txt_regname.Text) ||
+                string.IsNullOrWhiteSpace(txt_regname2.Text) ||
+                string.IsNullOrWhiteSpace(textBox5.Text) ||
+                string.IsNullOrWhiteSpace(textBox4.Text) ||
+                string.IsNullOrWhiteSpace(textBox3.Text))
+            {
+                MessageBox.Show("Please fill in all the required fields.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Check if the "not a robot" checkbox is checked
+            if (!checkbox_notrobot.Checked)
+            {
+                MessageBox.Show("We don't accept robots.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Check if password and confirm password match
+            if (textBox4.Text != textBox3.Text)
+            {
+                MessageBox.Show("Password and confirm password do not match.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Insert registration data into the database
+            try
+            {
+                connection.Open();
+                string query = "INSERT INTO [User Information] ([Account Name], [First Name], [Last Name], [Account Made], [Password]) " +
+                               "VALUES (@accountName, @firstName, @lastName, @accountMade, @password)";
+                OleDbCommand command = new OleDbCommand(query, connection);
+                command.Parameters.AddWithValue("@accountName", textBox5.Text);
+                command.Parameters.AddWithValue("@firstName", txt_regname.Text);
+                command.Parameters.AddWithValue("@lastName", txt_regname2.Text);
+                command.Parameters.AddWithValue("@accountMade", DateTime.Now);
+                command.Parameters.AddWithValue("@password", textBox4.Text);
+                command.ExecuteNonQuery();
+                MessageBox.Show("Registration successful.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                connection.Close();
+                ClearRegistrationFields();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                connection.Close();
+            }
+        }
+
+        private void btn_cancel_Click(object sender, EventArgs e)
+        {
+            ClearRegistrationFields();
+        }
+
+        private void ClearRegistrationFields()
+        {
+            txt_regname.Text = "";
+            txt_regname2.Text = "";
+            textBox5.Text = "";
+            textBox4.Text = "";
+            textBox3.Text = "";
+            checkbox_notrobot.Checked = false;
+        }
+
+        private void btn_login_Click(object sender, EventArgs e)
+        {
+            // Validate user input
+            if (string.IsNullOrWhiteSpace(txt_accname.Text) || string.IsNullOrWhiteSpace(txt_pass.Text))
+            {
+                MessageBox.Show("Please enter account name and password.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Check if the entered account name and password match the records in the database
+            try
+            {
+                connection.Open();
+                string query = "SELECT COUNT(*) FROM [User Information] WHERE [Account Name] = @accountName AND [Password] = @password";
+                OleDbCommand command = new OleDbCommand(query, connection);
+                command.Parameters.AddWithValue("@accountName", txt_accname.Text);
+                command.Parameters.AddWithValue("@password", txt_pass.Text);
+                int count = Convert.ToInt32(command.ExecuteScalar());
+connection.Close();
+if (count > 0)
+{
+// If account name and password are correct, show Form2
+Form2 form2 = new Form2();
+form2.Show();
+this.Hide();
+}
+else
+{
+MessageBox.Show("Invalid account name or password.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+}
+}
+catch (Exception ex)
+{
+MessageBox.Show("Error: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+connection.Close();
+}
+}
+}
+}

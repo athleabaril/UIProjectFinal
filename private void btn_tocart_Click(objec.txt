@@ -1,0 +1,100 @@
+private void btn_tocart_Click(object sender, EventArgs e)
+        {
+            
+            string connectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\Athlea Baril\Desktop\Vs Program OOP2\UI Project\UI Project DataBase\UI_Project Database.accdb;Persist Security Info=False;";
+            string sqlQuery = "SELECT [Game Name] FROM Game1 WHERE [Game ID] IN (";
+
+            // Check each checkbox and add the corresponding GameID to the SQL query
+            if (check1.Checked)
+            {
+                sqlQuery += "1,";
+            }
+            if (check2.Checked)
+            {
+                sqlQuery += "2,";
+            }
+            if (check3.Checked)
+            {
+                sqlQuery += "3,";
+            }
+            if (check4.Checked)
+            {
+                sqlQuery += "4,";
+            }
+            if (check5.Checked)
+            {
+                sqlQuery += "5,";
+            }
+            if (check6.Checked)
+            {
+                sqlQuery += "6,";
+            }
+            if (check7.Checked)
+            {
+                sqlQuery += "7,";
+            }
+            if (check8.Checked)
+            {
+                sqlQuery += "8,";
+            }
+            if (check9.Checked)
+            {
+                sqlQuery += "9,";
+            }
+            if (check10.Checked)
+            {
+                sqlQuery += "10,";
+            }
+            if (check11.Checked)
+            {
+                sqlQuery += "11,";
+            }
+            if (check12.Checked)
+            {
+                sqlQuery += "12,";
+            }
+
+            // Remove the trailing comma and close the parentheses in the SQL query
+            sqlQuery = sqlQuery.TrimEnd(',') + ")";
+
+            using (OleDbConnection connection = new OleDbConnection(connectionString))
+            {
+                OleDbCommand command = new OleDbCommand(sqlQuery, connection);
+                connection.Open();
+                OleDbDataReader reader = command.ExecuteReader();
+
+                // Add each selected game to the checkedList_out control
+                while (reader.Read())
+                {
+                    checkedList_out.Items.Add(reader["Game Name"].ToString());
+                }
+            }
+
+            decimal totalPrice = 0;
+            foreach (Control c in this.Controls)
+            {
+                if (c is CheckBox && ((CheckBox)c).Checked)
+                {
+                    // Get the game name from the checkbox
+                    string gameName = ((CheckBox)c).Text;
+
+                    // Add the game name to the checkedList_out control
+                    checkedList_out.Items.Add(gameName);
+
+                    // Lookup the price of the game in the database
+                    string sqlQuery1 = "SELECT [New Price] FROM [Game1] WHERE [Game Name] = @GameName";
+
+                    using (OleDbConnection connection = new OleDbConnection(connectionString))
+                    {
+                        OleDbCommand command = new OleDbCommand(sqlQuery1, connection);
+                        command.Parameters.AddWithValue("@GameName", gameName);
+                        connection.Open();
+                        decimal price = (decimal)command.ExecuteScalar();
+                        totalPrice += price;
+                    }
+                }
+            }
+
+            txt_ordertotal.Text = totalPrice.ToString();
+            amnt.Text = totalPrice.ToString(); 
+        }

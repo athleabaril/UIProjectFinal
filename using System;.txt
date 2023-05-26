@@ -1,0 +1,96 @@
+using System;
+using System.Data.OleDb;
+using System.Windows.Forms;
+
+namespace YourNamespace
+{
+    public partial class YourFormName : Form
+    {
+        private OleDbConnection connection;
+        private OleDbDataAdapter dataAdapter;
+        private DataSet dataSet;
+
+        public YourFormName()
+        {
+            InitializeComponent();
+        }
+
+        private void YourFormName_Load(object sender, EventArgs e)
+        {
+            // Set up database connection
+            string connectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\YourAccessDatabase.accdb;Persist Security Info=False;";
+            connection = new OleDbConnection(connectionString);
+            dataAdapter = new OleDbDataAdapter("SELECT * FROM Game1", connection);
+            dataSet = new DataSet();
+
+            // Load data into dataGridView1
+            dataAdapter.Fill(dataSet, "Game1");
+            dataGridView1.DataSource = dataSet.Tables["Game1"];
+
+            // Add event handler for CellClick event
+            dataGridView1.CellClick += DataGridView1_CellClick;
+
+            // Set up combo box for discount
+            combo_discount.Items.AddRange(new string[] { "Yes", "No" });
+
+            // Disable textboxes and radio buttons initially
+            pnlgame_gameid.Enabled = false;
+            pnlgame_gn.Enabled = false;
+            pnlgame_price.Enabled = false;
+            radio_yes.Enabled = false;
+            radio_no.Enabled = false;
+            combo_discount.Enabled = false;
+        }
+
+        private void DataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                // Get the selected row and its data
+                DataGridViewRow row = dataGridView1.Rows[e.RowIndex];
+                pnlgame_gameid.Text = row.Cells["GameID"].Value.ToString();
+                pnlgame_gn.Text = row.Cells["GameName"].Value.ToString();
+                pnlgame_price.Text = row.Cells["Price"].Value.ToString();
+
+                // Get the discount value and set the corresponding radio button and combo box selection
+                string discountValue = row.Cells["Discount"].Value.ToString();
+                if (discountValue == "Yes")
+                {
+                    radio_yes.Checked = true;
+                    combo_discount.SelectedIndex = 0;
+                }
+                else
+                {
+                    radio_no.Checked = true;
+                    combo_discount.SelectedIndex = 1;
+                }
+            }
+        }
+
+        // Add event handlers for textboxes and radio buttons to enable/disable combo box
+        private void pnlgame_gameid_TextChanged(object sender, EventArgs e)
+        {
+            combo_discount.Enabled = !string.IsNullOrEmpty(pnlgame_gameid.Text);
+        }
+
+        private void pnlgame_gn_TextChanged(object sender, EventArgs e)
+        {
+            combo_discount.Enabled = !string.IsNullOrEmpty(pnlgame_gn.Text);
+        }
+
+        private void pnlgame_price_TextChanged(object sender, EventArgs e)
+        {
+            combo_discount.Enabled = !string.IsNullOrEmpty(pnlgame_price.Text);
+        }
+
+        private void radio_yes_CheckedChanged(object sender, EventArgs e)
+        {
+            combo_discount.Enabled = true;
+        }
+
+        private void radio_no_CheckedChanged(object sender, EventArgs e)
+        {
+            combo_discount.Enabled = true;
+        }
+    }
+}
